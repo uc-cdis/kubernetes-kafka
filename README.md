@@ -8,18 +8,11 @@ To get consistent service DNS names `kafka-N.broker.kafka`(`.svc.cluster.local`)
 kubectl create -f 00namespace.yml
 ```
 
-## Set up volume claims
+## Set up storage class
 
-You may add [storage class](http://kubernetes.io/docs/user-guide/persistent-volumes/#storageclasses)
-to the kafka StatefulSet declaration to enable automatic volume provisioning.
-
-Alternatively create [PV](http://kubernetes.io/docs/user-guide/persistent-volumes/#persistent-volumes)s and [PVC](http://kubernetes.io/docs/user-guide/persistent-volumes/#persistentvolumeclaims)s manually. For example in Minikube.
-
+Setup [storage class](http://kubernetes.io/docs/user-guide/persistent-volumes/#storageclasses) that's used for kafka StatefulSet declaration to enable dynamic volume provisioning.
 ```
-./bootstrap/pv.sh
-kubectl create -f ./bootstrap/pvc.yml
-# check that claims are bound
-kubectl get pvc
+kubectl apply -f ./40storageclass.yaml
 ```
 
 ## Set up Zookeeper
