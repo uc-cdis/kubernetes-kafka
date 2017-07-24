@@ -1,0 +1,43 @@
+apiVersion: extensions/v1beta1 
+kind: Deployment
+metadata:
+  name: s3consumer-deployment
+  namespace: kafka
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: s3consumer
+    spec:
+      containers:
+      - name: s3consumer
+        image: quay.io/cdis/kafka_agent:master
+        command: 
+          - /bin/bash
+          - -c
+          - "./bin/kafka_agent consumer s3consumer --bucket $(ENVIRONMENT)-kafka --topic $(TOPIC) --broker kafka.kafka"
+        env:
+          - name: AWS_ACCESS_KEY_ID
+            valueFrom:
+              secretKeyRef:
+                name: kafka-s3
+                key: access_key 
+          - name: AWS_SECRET_ACCESS_KEY
+            valueFrom:
+              secretKeyRef:
+                name: kafka-s3
+                key: secret_key 
+          - name: TOPIC
+            valueFrom:
+              configMapKeyRef:
+                name: kafka-s3 
+                key: topic
+          - name: ENVIRONMENT 
+            valueFrom:
+              configMapKeyRef:
+                name: kafka-s3 
+                key: environment 
+        imagePullPolicy: Always       
+      imagePullSecrets:
+        - name: cdis-devservices-pull-secret
